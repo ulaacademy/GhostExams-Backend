@@ -1,0 +1,359 @@
+{
+  "info": {
+    "_postman_id": "9f6a9f2e-6a12-4b0a-8ad0-2a7b4f6b8c12",
+    "name": "ULA CSC Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Complete Postman collection for ULA CSC Backend. Uses {{base_url}} and {{token}} environment variables."
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "teacherId", "value": "", "type": "string" },
+    { "key": "studentId", "value": "", "type": "string" },
+    { "key": "examId", "value": "", "type": "string" },
+    { "key": "fileKey", "value": "sample/path/file.pdf", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "description": "Top-level system and utility endpoints.",
+      "item": [
+        {
+          "name": "Status - GET /api/status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/status", "host": ["{{base_url}}"], "path": ["api", "status"] }
+          }
+        },
+        {
+          "name": "S3 Files List - GET /api/files/list",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/files/list", "host": ["{{base_url}}"], "path": ["api", "files", "list"] }
+          }
+        },
+        {
+          "name": "Text To Speech - POST /api/tts",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"مرحبا\",\n  \"languageCode\": \"ar-XA\",\n  \"voiceName\": \"ar-XA-Wavenet-B\",\n  \"speakingRate\": 1.0\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/tts", "host": ["{{base_url}}"], "path": ["api", "tts"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Auth (/api/auth)",
+      "item": [
+        { "name": "Login - POST /login", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"email\": \"user@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/login","host":["{{base_url}}"],"path":["api","auth","login"]} } },
+        { "name": "Login Student - POST /login-student", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"email\": \"student@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/login-student","host":["{{base_url}}"],"path":["api","auth","login-student"]} } },
+        { "name": "Login Teacher - POST /login-teacher", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"email\": \"teacher@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/login-teacher","host":["{{base_url}}"],"path":["api","auth","login-teacher"]} } },
+        { "name": "Login Admin - POST /login-admin", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/login-admin","host":["{{base_url}}"],"path":["api","auth","login-admin"]} } },
+        { "name": "Register Student - POST /register", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"name\": \"Student\",\n  \"email\": \"student@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/register","host":["{{base_url}}"],"path":["api","auth","register"]} } },
+        { "name": "Register Student (alt) - POST /register-student", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"name\": \"Student\",\n  \"email\": \"student@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/register-student","host":["{{base_url}}"],"path":["api","auth","register-student"]} } },
+        { "name": "Register Teacher - POST /register-teacher", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"name\": \"Teacher\",\n  \"email\": \"teacher@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/register-teacher","host":["{{base_url}}"],"path":["api","auth","register-teacher"]} } },
+        { "name": "Profile (protected) - GET /profile", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/auth/profile","host":["{{base_url}}"],"path":["api","auth","profile"]} } },
+        { "name": "Protected test - GET /protected", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/auth/protected","host":["{{base_url}}"],"path":["api","auth","protected"]} } },
+        { "name": "Create Admin (temp) - POST /create-admin-temp", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"name\": \"Admin\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"}, "url": {"raw":"{{base_url}}/api/auth/create-admin-temp","host":["{{base_url}}"],"path":["api","auth","create-admin-temp"]} } }
+      ]
+    },
+
+    {
+      "name": "Admin (/api/admin)",
+      "item": [
+        { "name": "Dashboard - GET /dashboard", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/admin/dashboard","host":["{{base_url}}"],"path":["api","admin","dashboard"]} } },
+        { "name": "All Admins - GET /admins", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/admin/admins","host":["{{base_url}}"],"path":["api","admin","admins"]} } },
+        { "name": "All Students - GET /students", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/admin/students","host":["{{base_url}}"],"path":["api","admin","students"]} } },
+        { "name": "All Teachers - GET /teachers", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/admin/teachers","host":["{{base_url}}"],"path":["api","admin","teachers"]} } }
+      ]
+    },
+
+    {
+      "name": "Teacher Dashboard (/api/teacher & /api/teacher-dashboard)",
+      "item": [
+        { "name": "Custom Exams with Results - GET /custom-exams/with-results", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher/custom-exams/with-results","host":["{{base_url}}"],"path":["api","teacher","custom-exams","with-results"]} } },
+        { "name": "Get Teacher Students - POST /students", "request": { "method": "POST", "header": [ {"key":"Authorization","value":"Bearer {{token}}"}, {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"teacherId\": \"{{teacherId}}\"\n}"}, "url": {"raw":"{{base_url}}/api/teacher/students","host":["{{base_url}}"],"path":["api","teacher","students"]} } },
+        { "name": "Dashboard Metrics - GET /dashboard-metrics", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher/dashboard-metrics","host":["{{base_url}}"],"path":["api","teacher","dashboard-metrics"]} } },
+        { "name": "Exam Students Count - GET /exams/:examId/students-count", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher/exams/{{examId}}/students-count","host":["{{base_url}}"],"path":["api","teacher","exams","{{examId}}","students-count"]} } },
+        { "name": "Students Performance - GET /students-performance", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher/students-performance","host":["{{base_url}}"],"path":["api","teacher","students-performance"]} } },
+        { "name": "Student Report - GET /student-report/:teacherId/:studentId", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher/student-report/{{teacherId}}/{{studentId}}","host":["{{base_url}}"],"path":["api","teacher","student-report","{{teacherId}}","{{studentId}}"]} } },
+        { "name": "(Duplicate Base) Custom Exams with Results via /api/teacher-dashboard", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher-dashboard/custom-exams/with-results","host":["{{base_url}}"],"path":["api","teacher-dashboard","custom-exams","with-results"]} } }
+      ]
+    },
+
+    {
+      "name": "Teacher-Students (/api/teacher-students)",
+      "item": [
+        { "name": "My Students (protected) - GET /my-students", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/teacher-students/my-students","host":["{{base_url}}"],"path":["api","teacher-students","my-students"]} } },
+        { "name": "All Teachers (public) - GET /all-teachers", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/teacher-students/all-teachers","host":["{{base_url}}"],"path":["api","teacher-students","all-teachers"]} } },
+        { "name": "Subscribe Student (protected) - POST /subscribe", "request": { "method": "POST", "header": [ {"key":"Authorization","value":"Bearer {{token}}"}, {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"teacherId\": \"{{teacherId}}\"\n}"}, "url": {"raw":"{{base_url}}/api/teacher-students/subscribe","host":["{{base_url}}"],"path":["api","teacher-students","subscribe"]} } }
+      ]
+    },
+
+    {
+      "name": "Teacher Exam Results (/api/teacher-exam-results & /api/teacher-results)",
+      "item": [
+        { "name": "Submit Result - POST /submit", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"teacherId\": \"{{teacherId}}\",\n  \"studentId\": \"{{studentId}}\",\n  \"score\": 90\n}"}, "url": {"raw":"{{base_url}}/api/teacher-exam-results/submit","host":["{{base_url}}"],"path":["api","teacher-exam-results","submit"]} } },
+        { "name": "Student Report - GET /:teacherId/:studentId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/teacher-exam-results/{{teacherId}}/{{studentId}}","host":["{{base_url}}"],"path":["api","teacher-exam-results","{{teacherId}}","{{studentId}}"]} } },
+        { "name": "(Duplicate Base) Submit via /api/teacher-results/submit", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"teacherId\": \"{{teacherId}}\",\n  \"studentId\": \"{{studentId}}\",\n  \"score\": 90\n}"}, "url": {"raw":"{{base_url}}/api/teacher-results/submit","host":["{{base_url}}"],"path":["api","teacher-results","submit"]} } },
+        { "name": "(Duplicate Base) Student Report via /api/teacher-results/:ids", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/teacher-results/{{teacherId}}/{{studentId}}","host":["{{base_url}}"],"path":["api","teacher-results","{{teacherId}}","{{studentId}}"]} } }
+      ]
+    },
+
+    {
+      "name": "Student (/api/student)",
+      "item": [
+        { "name": "Dashboard - GET /dashboard/:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/student/dashboard/{{studentId}}","host":["{{base_url}}"],"path":["api","student","dashboard","{{studentId}}"]} } },
+        { "name": "Ghost Teacher Exams (protected) - GET /ghost-teacher-exams", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/student/ghost-teacher-exams","host":["{{base_url}}"],"path":["api","student","ghost-teacher-exams"]} } },
+        { "name": "Subscribed Teachers (protected) - GET /subscribed-teachers", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/student/subscribed-teachers","host":["{{base_url}}"],"path":["api","student","subscribed-teachers"]} } },
+        { "name": "Teacher Exams (protected) - GET /teacher/:teacherId/exams", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/student/teacher/{{teacherId}}/exams","host":["{{base_url}}"],"path":["api","student","teacher","{{teacherId}}","exams"]} } }
+      ]
+    },
+
+    {
+      "name": "Teacher Exams (/api/teacher-exams)",
+      "item": [
+        { "name": "Dashboard - GET /dashboard/:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/teacher-exams/dashboard/{{teacherId}}","host":["{{base_url}}"],"path":["api","teacher-exams","dashboard","{{teacherId}}"]} } },
+        { "name": "Analyze - GET /analyze", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/teacher-exams/analyze","host":["{{base_url}}"],"path":["api","teacher-exams","analyze"]} } },
+        { "name": "Analyze - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/teacher-exams/analyze","host":["{{base_url}}"],"path":["api","teacher-exams","analyze"]} } }
+      ]
+    },
+
+    {
+      "name": "School Exams (/api/school-exams)",
+      "item": [
+        { "name": "Dashboard - GET /dashboard/:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/school-exams/dashboard/{{id}}","host":["{{base_url}}"],"path":["api","school-exams","dashboard","{{id}}"]} } },
+        { "name": "Analyze - GET /analyze", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/school-exams/analyze","host":["{{base_url}}"],"path":["api","school-exams","analyze"]} } },
+        { "name": "Analyze - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/school-exams/analyze","host":["{{base_url}}"],"path":["api","school-exams","analyze"]} } }
+      ]
+    },
+
+    {
+      "name": "Books Exams (/api/books-exams)",
+      "item": [
+        { "name": "Dashboard - GET /dashboard/:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/books-exams/dashboard/{{id}}","host":["{{base_url}}"],"path":["api","books-exams","dashboard","{{id}}"]} } },
+        { "name": "Analyze - GET /analyze", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/books-exams/analyze","host":["{{base_url}}"],"path":["api","books-exams","analyze"]} } },
+        { "name": "Analyze - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/books-exams/analyze","host":["{{base_url}}"],"path":["api","books-exams","analyze"]} } }
+      ]
+    },
+
+    {
+      "name": "S3 (/api/s3)",
+      "item": [
+        { "name": "Generate Presigned URL - POST /generate-presigned-url", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"key\": \"{{fileKey}}\"\n}"}, "url": {"raw":"{{base_url}}/api/s3/generate-presigned-url","host":["{{base_url}}"],"path":["api","s3","generate-presigned-url"]} } }
+      ]
+    },
+
+    {
+      "name": "Exams (/api/exams)",
+      "item": [
+        { "name": "Create Exam - POST /create", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"title\": \"Sample Exam\",\n  \"questions\": []\n}"}, "url": {"raw":"{{base_url}}/api/exams/create","host":["{{base_url}}"],"path":["api","exams","create"]} } },
+        { "name": "List All - GET /", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/","host":["{{base_url}}"],"path":["api","exams",""], "query": []} } },
+        { "name": "AI Exams - GET /ai", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/ai","host":["{{base_url}}"],"path":["api","exams","ai"]} } },
+        { "name": "Teacher Exams - GET /teacher", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/teacher","host":["{{base_url}}"],"path":["api","exams","teacher"]} } },
+        { "name": "School Exams - GET /school", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/school","host":["{{base_url}}"],"path":["api","exams","school"]} } },
+        { "name": "Books Exams - GET /books", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/books","host":["{{base_url}}"],"path":["api","exams","books"]} } },
+        { "name": "Mixed Exams - GET /mixed", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/mixed","host":["{{base_url}}"],"path":["api","exams","mixed"]} } },
+        { "name": "Get Exam by ID - GET /get-exam/:examId (general)", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam","{{examId}}"]} } },
+        { "name": "Get Exam (Teacher) - GET /get-exam/teacher/:examId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam/teacher/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam","teacher","{{examId}}"]} } },
+        { "name": "Get Exam (School) - GET /get-exam/school/:examId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam/school/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam","school","{{examId}}"]} } },
+        { "name": "Get Exam (Books) - GET /get-exam/books/:examId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam/books/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam","books","{{examId}}"]} } },
+        { "name": "Get Mixed Exam - GET /get-exam/mixed/:examId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam/mixed/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam","mixed","{{examId}}"]} } },
+        { "name": "Get Ministry Exam (overload) - GET /get-ministry-exam", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-ministry-exam","host":["{{base_url}}"],"path":["api","exams","get-ministry-exam"]} } },
+        { "name": "Submit Exam - POST /submit", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"examId\": \"{{examId}}\",\n  \"answers\": []\n}"}, "url": {"raw":"{{base_url}}/api/exams/submit","host":["{{base_url}}"],"path":["api","exams","submit"]} } },
+        { "name": "Latest Result - GET /latest-result/:userId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/latest-result/{{studentId}}","host":["{{base_url}}"],"path":["api","exams","latest-result","{{studentId}}"]} } },
+        { "name": "User Results - GET /results/:userId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/results/{{studentId}}","host":["{{base_url}}"],"path":["api","exams","results","{{studentId}}"]} } },
+        { "name": "Get Exam by DB ID - GET /get-exam-by-id/:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam-by-id/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam-by-id","{{examId}}"]} } },
+        { "name": "Get Questions for Exam - GET /get-exam/:examId (questions)", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/get-exam/{{examId}}","host":["{{base_url}}"],"path":["api","exams","get-exam","{{examId}}"]} } },
+        { "name": "Generate Teacher Exam - POST /generate-teacher-exam", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/generate-teacher-exam","host":["{{base_url}}"],"path":["api","exams","generate-teacher-exam"]} } },
+        { "name": "Generate School Exam - POST /generate-school-exam", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/generate-school-exam","host":["{{base_url}}"],"path":["api","exams","generate-school-exam"]} } },
+        { "name": "Generate Books Exam - POST /generate-books-exam", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/generate-books-exam","host":["{{base_url}}"],"path":["api","exams","generate-books-exam"]} } },
+        { "name": "Generate Mixed AI Exam - POST /generate-mixed-exam", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/generate-mixed-exam","host":["{{base_url}}"],"path":["api","exams","generate-mixed-exam"]} } },
+        { "name": "Add Question to Exam - POST /:examId/add-question", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"questionId\": \"\"\n}"}, "url": {"raw":"{{base_url}}/api/exams/{{examId}}/add-question","host":["{{base_url}}"],"path":["api","exams","{{examId}}","add-question"]} } },
+        { "name": "Create Teacher Custom Exam - POST /custom-exams/create", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"title\": \"Custom\",\n  \"questions\": []\n}"}, "url": {"raw":"{{base_url}}/api/exams/custom-exams/create","host":["{{base_url}}"],"path":["api","exams","custom-exams","create"]} } },
+        { "name": "List Teacher Custom Exams - GET /custom-exams/all", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/custom-exams/all","host":["{{base_url}}"],"path":["api","exams","custom-exams","all"]} } },
+        { "name": "Delete Exam - DELETE /:id", "request": { "method": "DELETE", "header": [], "url": {"raw":"{{base_url}}/api/exams/{{examId}}","host":["{{base_url}}"],"path":["api","exams","{{examId}}"]} } },
+        { "name": "AI Explain - POST /generate-explanation", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"question\": \"...\"\n}"}, "url": {"raw":"{{base_url}}/api/exams/generate-explanation","host":["{{base_url}}"],"path":["api","exams","generate-explanation"]} } },
+        { "name": "AI Analyze Exams - POST /ai/analyze-exams", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/ai/analyze-exams","host":["{{base_url}}"],"path":["api","exams","ai","analyze-exams"]} } },
+        { "name": "AI Generate - POST /ai/generate", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/ai/generate","host":["{{base_url}}"],"path":["api","exams","ai","generate"]} } },
+        { "name": "AI Store - POST /ai/store", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ }"}, "url": {"raw":"{{base_url}}/api/exams/ai/store","host":["{{base_url}}"],"path":["api","exams","ai","store"]} } },
+        { "name": "AI Questions - GET /ai/questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/ai/questions","host":["{{base_url}}"],"path":["api","exams","ai","questions"]} } }
+      ]
+    },
+
+    {
+      "name": "Ministry Exams (/api/exams/ministry & /api/ministry-exams)",
+      "item": [
+        { "name": "Generate Ministry Exam - POST /generate-ministry-exam (via /api/exams/ministry)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exams/ministry/generate-ministry-exam","host":["{{base_url}}"],"path":["api","exams","ministry","generate-ministry-exam"]} } },
+        { "name": "Get Ministry Exam - GET /get-exam/:examId (via /api/exams/ministry)", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exams/ministry/get-exam/{{examId}}","host":["{{base_url}}"],"path":["api","exams","ministry","get-exam","{{examId}}"]} } },
+        { "name": "Submit Answer - POST /submit (via /api/exams/ministry)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"examId\": \"{{examId}}\",\n  \"answers\": []\n}"}, "url": {"raw":"{{base_url}}/api/exams/ministry/submit","host":["{{base_url}}"],"path":["api","exams","ministry","submit"]} } },
+        { "name": "Submit Exam Result - POST /submit-exam (via /api/exams/ministry)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ }"}, "url": {"raw":"{{base_url}}/api/exams/ministry/submit-exam","host":["{{base_url}}"],"path":["api","exams","ministry","submit-exam"]} } },
+        { "name": "Generate Ministry Exam - POST /generate-ministry-exam (via /api/ministry-exams)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ministry-exams/generate-ministry-exam","host":["{{base_url}}"],"path":["api","ministry-exams","generate-ministry-exam"]} } },
+        { "name": "Get Ministry Exam - GET /get-exam/:examId (via /api/ministry-exams)", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/ministry-exams/get-exam/{{examId}}","host":["{{base_url}}"],"path":["api","ministry-exams","get-exam","{{examId}}"]} } },
+        { "name": "Submit Answer - POST /submit (via /api/ministry-exams)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"examId\": \"{{examId}}\",\n  \"answers\": []\n}"}, "url": {"raw":"{{base_url}}/api/ministry-exams/submit","host":["{{base_url}}"],"path":["api","ministry-exams","submit"]} } },
+        { "name": "Submit Exam Result - POST /submit-exam (via /api/ministry-exams)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ }"}, "url": {"raw":"{{base_url}}/api/ministry-exams/submit-exam","host":["{{base_url}}"],"path":["api","ministry-exams","submit-exam"]} } }
+      ]
+    },
+
+    {
+      "name": "Coupons (/api/coupons)",
+      "item": [
+        { "name": "Create - POST /create", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"code\": \"WELCOME10\",\n  \"discount\": 10\n}"}, "url": {"raw":"{{base_url}}/api/coupons/create","host":["{{base_url}}"],"path":["api","coupons","create"]} } },
+        { "name": "Validate - POST /validate", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"code\": \"WELCOME10\"\n}"}, "url": {"raw":"{{base_url}}/api/coupons/validate","host":["{{base_url}}"],"path":["api","coupons","validate"]} } },
+        { "name": "Use - POST /use", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"code\": \"WELCOME10\"\n}"}, "url": {"raw":"{{base_url}}/api/coupons/use","host":["{{base_url}}"],"path":["api","coupons","use"]} } },
+        { "name": "All Coupons - GET /all", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/coupons/all","host":["{{base_url}}"],"path":["api","coupons","all"]} } },
+        { "name": "Delete - DELETE /delete/:id", "request": { "method": "DELETE", "header": [], "url": {"raw":"{{base_url}}/api/coupons/delete/{{id}}","host":["{{base_url}}"],"path":["api","coupons","delete","{{id}}"]} } }
+      ]
+    },
+
+    {
+      "name": "Subscriptions (/api/subscriptions)",
+      "item": [
+        { "name": "Create - POST /create", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"name\": \"Basic\",\n  \"price\": 10\n}"}, "url": {"raw":"{{base_url}}/api/subscriptions/create","host":["{{base_url}}"],"path":["api","subscriptions","create"]} } },
+        { "name": "All - GET /all", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/subscriptions/all","host":["{{base_url}}"],"path":["api","subscriptions","all"]} } },
+        { "name": "Update - PUT /update/:id", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ }"}, "url": {"raw":"{{base_url}}/api/subscriptions/update/{{id}}","host":["{{base_url}}"],"path":["api","subscriptions","update","{{id}}"]} } },
+        { "name": "Delete - DELETE /delete/:id", "request": { "method": "DELETE", "header": [], "url": {"raw":"{{base_url}}/api/subscriptions/delete/{{id}}","host":["{{base_url}}"],"path":["api","subscriptions","delete","{{id}}"]} } },
+        { "name": "Upgrade - PUT /upgrade", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{\n  \"studentId\": \"{{studentId}}\",\n  \"plan\": \"Pro\"\n}"}, "url": {"raw":"{{base_url}}/api/subscriptions/upgrade","host":["{{base_url}}"],"path":["api","subscriptions","upgrade"]} } },
+        { "name": "Student Subscription - GET /student/:studentId", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/subscriptions/student/{{studentId}}","host":["{{base_url}}"],"path":["api","subscriptions","student","{{studentId}}"]} } }
+      ]
+    },
+
+    {
+      "name": "Uploads (/api/uploads)",
+      "item": [
+        { "name": "Upload Book - POST /upload (multipart)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"bookFile","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/uploads/upload","host":["{{base_url}}"],"path":["api","uploads","upload"]} } },
+        { "name": "List Books - GET /list", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/uploads/list","host":["{{base_url}}"],"path":["api","uploads","list"]} } },
+        { "name": "Analyze Book - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"key\": \"{{fileKey}}\" \n}"}, "url": {"raw":"{{base_url}}/api/uploads/analyze","host":["{{base_url}}"],"path":["api","uploads","analyze"]} } },
+        { "name": "Generate Questions - GET /generate-questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/uploads/generate-questions","host":["{{base_url}}"],"path":["api","uploads","generate-questions"]} } }
+      ]
+    },
+
+    {
+      "name": "File Processing (/api/files)",
+      "item": [
+        { "name": "Process PDF (multipart) - POST /process-pdf", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-pdf","host":["{{base_url}}"],"path":["api","files","process-pdf"]} } },
+        { "name": "Process Word (multipart) - POST /process-word", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-word","host":["{{base_url}}"],"path":["api","files","process-word"]} } },
+        { "name": "Process Excel (multipart) - POST /process-excel", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-excel","host":["{{base_url}}"],"path":["api","files","process-excel"]} } },
+        { "name": "Process Image (multipart) - POST /process-image", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-image","host":["{{base_url}}"],"path":["api","files","process-image"]} } },
+        { "name": "Process from S3 - POST /process-s3", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"key\": \"{{fileKey}}\" \n}"}, "url": {"raw":"{{base_url}}/api/files/process-s3","host":["{{base_url}}"],"path":["api","files","process-s3"]} } },
+        { "name": "Process Uploaded (multipart) - POST /process-uploaded", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-uploaded","host":["{{base_url}}"],"path":["api","files","process-uploaded"]} } },
+        { "name": "Process Multiple (multipart) - POST /process-multiple", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"files","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-multiple","host":["{{base_url}}"],"path":["api","files","process-multiple"]} } },
+        { "name": "Process and Save Questions - POST /process-and-save", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/files/process-and-save","host":["{{base_url}}"],"path":["api","files","process-and-save"]} } }
+      ]
+    },
+
+    {
+      "name": "Exam Generation (/api/exam-generation)",
+      "item": [
+        { "name": "Generate AI - POST /generate-ai", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exam-generation/generate-ai","host":["{{base_url}}"],"path":["api","exam-generation","generate-ai"]} } },
+        { "name": "Generate Mixed - POST /generate-mixed", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exam-generation/generate-mixed","host":["{{base_url}}"],"path":["api","exam-generation","generate-mixed"]} } },
+        { "name": "Store - POST /store", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exam-generation/store","host":["{{base_url}}"],"path":["api","exam-generation","store"]} } },
+        { "name": "Questions - GET /questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/questions","host":["{{base_url}}"],"path":["api","exam-generation","questions"]} } },
+        { "name": "Analyze Exams - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exam-generation/analyze","host":["{{base_url}}"],"path":["api","exam-generation","analyze"]} } },
+        { "name": "All Exams - GET /all-exams", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/all-exams","host":["{{base_url}}"],"path":["api","exam-generation","all-exams"]} } },
+        { "name": "All School Exams - GET /get-all-exams/school", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/get-all-exams/school","host":["{{base_url}}"],"path":["api","exam-generation","get-all-exams","school"]} } },
+        { "name": "All Books Exams - GET /get-all-exams/books", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/get-all-exams/books","host":["{{base_url}}"],"path":["api","exam-generation","get-all-exams","books"]} } },
+        { "name": "Delete - DELETE /delete/:id", "request": { "method": "DELETE", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/delete/{{id}}","host":["{{base_url}}"],"path":["api","exam-generation","delete","{{id}}"]} } },
+        { "name": "Get Exam by ID - GET /get-exam/:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/get-exam/{{examId}}","host":["{{base_url}}"],"path":["api","exam-generation","get-exam","{{examId}}"]} } },
+        { "name": "AI Generate (alt) - POST /generate-ai-exam", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exam-generation/generate-ai-exam","host":["{{base_url}}"],"path":["api","exam-generation","generate-ai-exam"]} } },
+        { "name": "AI Generated Exams - GET /generated-exams", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/exam-generation/generated-exams","host":["{{base_url}}"],"path":["api","exam-generation","generated-exams"]} } },
+        { "name": "Store AI Exam - POST /store-ai-exam", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/exam-generation/store-ai-exam","host":["{{base_url}}"],"path":["api","exam-generation","store-ai-exam"]} } }
+      ]
+    },
+
+    {
+      "name": "Random Exams (/api/random-exams)",
+      "item": [
+        { "name": "Generate - POST /generate", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ }"}, "url": {"raw":"{{base_url}}/api/random-exams/generate","host":["{{base_url}}"],"path":["api","random-exams","generate"]} } }
+      ]
+    },
+
+    {
+      "name": "Student Performance (/api/student-performance)",
+      "item": [
+        { "name": "Suggest Retest - GET /suggest-retest", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/student-performance/suggest-retest","host":["{{base_url}}"],"path":["api","student-performance","suggest-retest"]} } }
+      ]
+    },
+
+    {
+      "name": "Answers (/api/answers)",
+      "item": [
+        { "name": "Submit Answer - POST /submit", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"examId\": \"{{examId}}\",\n  \"answers\": [] \n}"}, "url": {"raw":"{{base_url}}/api/answers/submit","host":["{{base_url}}"],"path":["api","answers","submit"]} } },
+        { "name": "AI Explanation - POST /ai-explanation", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"question\": \"...\" \n}"}, "url": {"raw":"{{base_url}}/api/answers/ai-explanation","host":["{{base_url}}"],"path":["api","answers","ai-explanation"]} } }
+      ]
+    },
+
+    {
+      "name": "Questions (/api/questions)",
+      "item": [
+        { "name": "Teacher Questions - GET /get-teacher-questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions/get-teacher-questions","host":["{{base_url}}"],"path":["api","questions","get-teacher-questions"]} } },
+        { "name": "School Questions - GET /get-school-questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions/get-school-questions","host":["{{base_url}}"],"path":["api","questions","get-school-questions"]} } },
+        { "name": "Books Questions - GET /get-books-questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions/get-books-questions","host":["{{base_url}}"],"path":["api","questions","get-books-questions"]} } },
+        { "name": "All Questions - GET /get-all", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions/get-all","host":["{{base_url}}"],"path":["api","questions","get-all"]} } },
+        { "name": "Get Exam Questions - GET /get-exam-questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions/get-exam-questions","host":["{{base_url}}"],"path":["api","questions","get-exam-questions"]} } },
+        { "name": "Get Question by ID - GET /:id", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions/{{id}}","host":["{{base_url}}"],"path":["api","questions","{{id}}"]} } },
+        { "name": "Create Question - POST /create", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"text\": \"...\" \n}"}, "url": {"raw":"{{base_url}}/api/questions/create","host":["{{base_url}}"],"path":["api","questions","create"]} } },
+        { "name": "Delete All - DELETE /delete-all", "request": { "method": "DELETE", "header": [], "url": {"raw":"{{base_url}}/api/questions/delete-all","host":["{{base_url}}"],"path":["api","questions","delete-all"]} } },
+        { "name": "Delete by ID - DELETE /:id", "request": { "method": "DELETE", "header": [], "url": {"raw":"{{base_url}}/api/questions/{{id}}","host":["{{base_url}}"],"path":["api","questions","{{id}}"]} } },
+        { "name": "Like Question - POST /like", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"questionId\": \"\" \n}"}, "url": {"raw":"{{base_url}}/api/questions/like","host":["{{base_url}}"],"path":["api","questions","like"]} } },
+        { "name": "AI Answer - POST /ai/answer", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"question\": \"...\" \n}"}, "url": {"raw":"{{base_url}}/api/questions/ai/answer","host":["{{base_url}}"],"path":["api","questions","ai","answer"]} } }
+      ]
+    },
+
+    {
+      "name": "OCR (/api/ocr)",
+      "item": [
+        { "name": "Analyze Image (multipart) - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"file","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/ocr/analyze","host":["{{base_url}}"],"path":["api","ocr","analyze"]} } },
+        { "name": "Status - GET /status", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/ocr/status","host":["{{base_url}}"],"path":["api","ocr","status"]} } }
+      ]
+    },
+
+    {
+      "name": "Question Extraction (/api/questions-extraction)",
+      "item": [
+        { "name": "Test - GET /test", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions-extraction/test","host":["{{base_url}}"],"path":["api","questions-extraction","test"]} } },
+        { "name": "Extract - POST /extract", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"text\": \"...\" \n}"}, "url": {"raw":"{{base_url}}/api/questions-extraction/extract","host":["{{base_url}}"],"path":["api","questions-extraction","extract"]} } },
+        { "name": "Fetch Exam - GET /fetch-exam", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/questions-extraction/fetch-exam","host":["{{base_url}}"],"path":["api","questions-extraction","fetch-exam"]} } }
+      ]
+    },
+
+    {
+      "name": "AI Exams (/api/ai-exams & /api/ai)",
+      "item": [
+        { "name": "Analyze - POST /analyze (via /api/ai-exams)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ai-exams/analyze","host":["{{base_url}}"],"path":["api","ai-exams","analyze"]} } },
+        { "name": "Generate AI - POST /generate-ai (via /api/ai-exams)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ai-exams/generate-ai","host":["{{base_url}}"],"path":["api","ai-exams","generate-ai"]} } },
+        { "name": "Store Exam - POST /store-exam (via /api/ai-exams)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ai-exams/store-exam","host":["{{base_url}}"],"path":["api","ai-exams","store-exam"]} } },
+        { "name": "Generated Exams - GET /exams (via /api/ai-exams)", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/ai-exams/exams","host":["{{base_url}}"],"path":["api","ai-exams","exams"]} } },
+        { "name": "Analyze - POST /analyze (via /api/ai)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ai/analyze","host":["{{base_url}}"],"path":["api","ai","analyze"]} } },
+        { "name": "Generate AI - POST /generate-ai (via /api/ai)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ai/generate-ai","host":["{{base_url}}"],"path":["api","ai","generate-ai"]} } },
+        { "name": "Store Exam - POST /store-exam (via /api/ai)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{}"}, "url": {"raw":"{{base_url}}/api/ai/store-exam","host":["{{base_url}}"],"path":["api","ai","store-exam"]} } },
+        { "name": "Generated Exams - GET /exams (via /api/ai)", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/ai/exams","host":["{{base_url}}"],"path":["api","ai","exams"]} } }
+      ]
+    },
+
+    {
+      "name": "Books (/api/books)",
+      "item": [
+        { "name": "Upload - POST /upload (multipart)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"multipart/form-data"} ], "body": { "mode": "formdata", "formdata": [ {"key":"bookFile","type":"file","src":""} ] }, "url": {"raw":"{{base_url}}/api/books/upload","host":["{{base_url}}"],"path":["api","books","upload"]} } },
+        { "name": "List - GET /list", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/books/list","host":["{{base_url}}"],"path":["api","books","list"]} } },
+        { "name": "Analyze - POST /analyze", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": {"mode":"raw","raw":"{ \n  \"key\": \"{{fileKey}}\" \n}"}, "url": {"raw":"{{base_url}}/api/books/analyze","host":["{{base_url}}"],"path":["api","books","analyze"]} } },
+        { "name": "Generate Questions - GET /generate-questions", "request": { "method": "GET", "header": [], "url": {"raw":"{{base_url}}/api/books/generate-questions","host":["{{base_url}}"],"path":["api","books","generate-questions"]} } }
+      ]
+    },
+
+    {
+      "name": "Protected & Debug",
+      "item": [
+        { "name": "Protected Test - GET /api/protected", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/protected","host":["{{base_url}}"],"path":["api","protected"]} } },
+        { "name": "Debug Auth - GET /api/debug/auth", "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ], "url": {"raw":"{{base_url}}/api/debug/auth","host":["{{base_url}}"],"path":["api","debug","auth"]} } }
+      ]
+    }
+  ]
+}
