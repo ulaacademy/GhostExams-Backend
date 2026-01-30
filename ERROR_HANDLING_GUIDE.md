@@ -95,8 +95,8 @@ if (!token) {
 const { AuthenticationError } = require('../utils/AppError');
 
 if (!token) {
-  throw new AuthenticationError(' لم يتم العثور على التوكن الرجاء تسجيل دخول او عمل حساب بالموقع ');
-    // ✅ Error is passed to global handler
+  throw new AuthenticationError('لم يتم العثور على التوكن');
+  // ✅ Error is passed to global handler
 }
 ```
 
