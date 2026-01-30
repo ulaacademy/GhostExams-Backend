@@ -142,7 +142,7 @@ All error messages are in Arabic and user-friendly:
 | Missing Token | "لم يتم العثور على التوكن" |
 | Invalid Token | "توكن غير صالح أو منتهي الصلاحية" |
 | User Not Found | "المستخدم غير موجود" |
-| Banned User | "تم حظر حسابك. تواصل مع الدعم للمزيد" |
+| Banned User |  "تم حظر حسابك. تواصل مع الدعم للمزيد 0791515106 واتس اب فقط" |
 | No Subscription | "لا يوجد اشتراك نشط. يرجى الاشتراك في إحدى الباقات للاستمرار" |
 | Expired Subscription | "الاشتراك منتهي الصلاحية" |
 | Limit Exceeded | "لا يمكن إضافة المزيد من الأسئلة. الحد الأقصى: 100" |
