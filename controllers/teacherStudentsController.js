@@ -4,18 +4,23 @@ const TeacherStudentSubscription = require("../models/TeacherStudentSubscription
 const Teacher = require("../models/Teacher");
 const Subscription = require("../models/Subscription");
 const { ghostTeacherId } = require("../config/ghostTeacher");
+const TeacherCustomExam = require("../models/TeacherCustomExam");
 
 exports.getMyStudents = async (req, res) => {
   try {
     const teacherId = req.user._id;
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
-    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), 100);
+    const limit = Math.min(
+      Math.max(parseInt(req.query.limit, 10) || 10, 1),
+      100,
+    );
     const search = (req.query.search || "").trim();
     const sortBy = req.query.sortBy || "createdAt";
     const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
 
     // ✅ التحقق إذا كان المعلم هو Ghost Teacher
-    const isGhostTeacher = ghostTeacherId && teacherId.toString() === ghostTeacherId.toString();
+    const isGhostTeacher =
+      ghostTeacherId && teacherId.toString() === ghostTeacherId.toString();
 
     let students = [];
     let total = 0;
@@ -83,18 +88,17 @@ exports.getMyStudents = async (req, res) => {
         }));
     }
 
-    res.status(200).json({ 
+    res.status(200).json({
       students,
       total,
       page,
-      limit
+      limit,
     });
   } catch (error) {
     console.error("❌ خطأ أثناء جلب طلاب المعلم:", error);
     res.status(500).json({ message: "❌ فشل في جلب طلاب المعلم", error });
   }
 };
-
 
 exports.subscribeStudentToTeacher = async (req, res) => {
   try {
@@ -108,9 +112,12 @@ exports.subscribeStudentToTeacher = async (req, res) => {
     // ✅ Validate teacherId format
     if (!mongoose.Types.ObjectId.isValid(teacherId)) {
       console.error("❌ Invalid teacherId format:", teacherId);
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "❌ معرف المعلم غير صحيح.",
-        debug: { teacherId, isValid: mongoose.Types.ObjectId.isValid(teacherId) }
+        debug: {
+          teacherId,
+          isValid: mongoose.Types.ObjectId.isValid(teacherId),
+        },
       });
     }
 
@@ -122,7 +129,10 @@ exports.subscribeStudentToTeacher = async (req, res) => {
 
     if (!studentId) {
       studentId = req.user.userId || req.user.id || req.user._id;
-    } else if (studentId.toString() !== (req.user.userId || req.user.id || req.user._id).toString()) {
+    } else if (
+      studentId.toString() !==
+      (req.user.userId || req.user.id || req.user._id).toString()
+    ) {
       return res
         .status(403)
         .json({ message: "❌ لا يمكنك الاشتراك بالنيابة عن طالب آخر." });
@@ -131,9 +141,12 @@ exports.subscribeStudentToTeacher = async (req, res) => {
     // ✅ Validate studentId format
     if (!mongoose.Types.ObjectId.isValid(studentId)) {
       console.error("❌ Invalid studentId format:", studentId);
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "❌ معرف الطالب غير صحيح.",
-        debug: { studentId, isValid: mongoose.Types.ObjectId.isValid(studentId) }
+        debug: {
+          studentId,
+          isValid: mongoose.Types.ObjectId.isValid(studentId),
+        },
       });
     }
 
@@ -151,7 +164,7 @@ exports.subscribeStudentToTeacher = async (req, res) => {
       teacherId: teacherId,
       teacherObjectId: teacherObjectId.toString(),
       studentId: studentId,
-      studentObjectId: studentObjectId.toString()
+      studentObjectId: studentObjectId.toString(),
     });
 
     let [student, teacher] = await Promise.all([
@@ -165,20 +178,28 @@ exports.subscribeStudentToTeacher = async (req, res) => {
     }
 
     if (!teacher) {
-      console.error("❌ Teacher not found with ObjectId:", teacherObjectId.toString());
+      console.error(
+        "❌ Teacher not found with ObjectId:",
+        teacherObjectId.toString(),
+      );
       // ✅ Try to find teacher by string ID as fallback
       const teacherByString = await Teacher.findById(teacherId);
       if (!teacherByString) {
         // ✅ Check if teacher exists at all
-        const allTeachers = await Teacher.find({}).select('_id name email').limit(5);
-        console.error("❌ Available teachers (sample):", allTeachers.map(t => ({ id: t._id.toString(), name: t.name })));
-        return res.status(404).json({ 
+        const allTeachers = await Teacher.find({})
+          .select("_id name email")
+          .limit(5);
+        console.error(
+          "❌ Available teachers (sample):",
+          allTeachers.map((t) => ({ id: t._id.toString(), name: t.name })),
+        );
+        return res.status(404).json({
           message: "❌ المعلم غير موجود.",
-          debug: { 
-            teacherId, 
+          debug: {
+            teacherId,
             teacherObjectId: teacherObjectId.toString(),
-            isValidObjectId: mongoose.Types.ObjectId.isValid(teacherId)
-          }
+            isValidObjectId: mongoose.Types.ObjectId.isValid(teacherId),
+          },
         });
       }
       // ✅ Use the teacher found by string ID
@@ -207,7 +228,7 @@ exports.subscribeStudentToTeacher = async (req, res) => {
     }
 
     const currentStudentCount = await TeacherStudentSubscription.countDocuments(
-      { teacherId: teacherObjectId }
+      { teacherId: teacherObjectId },
     );
 
     const planMaxStudents =
@@ -299,6 +320,37 @@ exports.getAllTeachersPublic = async (req, res) => {
       return res.status(200).json({ success: true, teachers: [] });
     }
 
+    // ✅ تحويل IDs إلى ObjectId مرة واحدة
+    const teacherObjectIds = teacherIds.map(
+      (id) => new mongoose.Types.ObjectId(id),
+    );
+
+    // ✅ حساب عدد الامتحانات + عدد الأسئلة لكل معلم من TeacherCustomExam
+    const examsAgg = await TeacherCustomExam.aggregate([
+      { $match: { teacherId: { $in: teacherObjectIds } } },
+      {
+        $project: {
+          teacherId: 1,
+          qCount: { $size: { $ifNull: ["$questions", []] } },
+        },
+      },
+      {
+        $group: {
+          _id: "$teacherId",
+          examsCount: { $sum: 1 },
+          questionsCount: { $sum: "$qCount" },
+        },
+      },
+    ]);
+
+    const examsCountMap = new Map();
+    const questionsCountMap = new Map();
+
+    examsAgg.forEach((x) => {
+      examsCountMap.set(x._id.toString(), x.examsCount || 0);
+      questionsCountMap.set(x._id.toString(), x.questionsCount || 0);
+    });
+
     const teacherSubscriptions = await TeacherStudentSubscription.aggregate([
       {
         $match: {
@@ -325,14 +377,13 @@ exports.getAllTeachersPublic = async (req, res) => {
       const plan = subscription?.planId;
 
       const currentStudents =
-        countsMap.get(id) ??
-        teacher.currentUsage?.studentsCount ??
-        0;
+        countsMap.get(id) ?? teacher.currentUsage?.studentsCount ?? 0;
 
       const maxStudents =
-        plan?.maxStudents ??
-        teacher.currentLimits?.maxStudents ??
-        0;
+        plan?.maxStudents ?? teacher.currentLimits?.maxStudents ?? 0;
+      // ✅ هون ضيفها
+      const examsCount = examsCountMap.get(id) ?? 0;
+      const questionsCount = questionsCountMap.get(id) ?? 0;
 
       const normalizedImage =
         teacher.profileImage ||
@@ -342,7 +393,8 @@ exports.getAllTeachersPublic = async (req, res) => {
         teacher.photoUrl ||
         "";
 
-      const biography = teacher.bio || teacher.brief || teacher.description || "";
+      const biography =
+        teacher.bio || teacher.brief || teacher.description || "";
 
       return {
         id,
@@ -354,10 +406,10 @@ exports.getAllTeachersPublic = async (req, res) => {
         planName: plan?.name || "",
         maxStudents,
         currentStudents,
+        examsCount, // ✅ وهون
+        questionsCount,
         isFull:
-          maxStudents > 0
-            ? currentStudents >= Number(maxStudents || 0)
-            : false,
+          maxStudents > 0 ? currentStudents >= Number(maxStudents || 0) : false,
         subscriptionEndsAt: subscription?.endDate || null,
       };
     });
