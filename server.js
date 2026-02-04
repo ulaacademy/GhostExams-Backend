@@ -40,6 +40,9 @@ const studentPlanRoutes = require("./routes/studentPlanRoutes");
 const examAttemptRoutes = require("./routes/examAttemptRoutes");
 const studentSubscriptionRoutes = require("./routes/studentSubscriptionRoutes");
 
+const publicExamsRoutes = require("./routes/publicExamsRoutes");
+
+
 // ✅ التحقق من تحميل المسارات
 console.log("📡 تحميل مسارات API...");
 console.log("📡 تحميل examRoutes.js...");
@@ -215,6 +218,7 @@ app.use("/api/teacher-results", require("./routes/teacherExamResultRoutes"));
 app.use("/api/exam-attempts", examAttemptRoutes);
 app.use("/api/student-plans", studentPlanRoutes);
 app.use("/api/student-subscriptions", studentSubscriptionRoutes);
+app.use("/api", publicExamsRoutes);
 
 app.use("/api/exams/custom-exams", customExamRoutes);
 
