@@ -10,7 +10,7 @@ const { ghostTeacherId } = require("../config/ghostTeacher");
 const getGhostTeacherObjectId = () => {
   if (!ghostTeacherId) return null;
   try {
-    return mongoose.Types.ObjectId.isValid(ghostTeacherId) 
+    return mongoose.Types.ObjectId.isValid(ghostTeacherId)
       ? new mongoose.Types.ObjectId(ghostTeacherId)
       : null;
   } catch (error) {
@@ -43,7 +43,7 @@ const getStudentDashboard = async (req, res) => {
     exams.forEach((exam) => {
       let examScore = exam.questions.reduce(
         (acc, q) => acc + (q.correct ? 1 : 0),
-        0
+        0,
       );
       totalScore += examScore;
 
@@ -63,7 +63,7 @@ const getStudentDashboard = async (req, res) => {
           (subjectPerformance[subject].total /
             subjectPerformance[subject].count) *
           100,
-      })
+      }),
     );
 
     const subscriptions = student.subscriptions.map((sub) => ({
@@ -99,8 +99,13 @@ const getSubscribedTeachers = async (req, res) => {
     // ✅ التحقق من وجود studentId
     const studentId = req.user?.id || req.user?.userId || req.user?._id;
     if (!studentId) {
-      console.error("❌ studentId not found in req.user:", JSON.stringify(req.user, null, 2));
-      return res.status(400).json({ error: "❌ لم يتم العثور على معرف الطالب" });
+      console.error(
+        "❌ studentId not found in req.user:",
+        JSON.stringify(req.user, null, 2),
+      );
+      return res
+        .status(400)
+        .json({ error: "❌ لم يتم العثور على معرف الطالب" });
     }
 
     // ✅ التحقق من صحة studentId
@@ -115,7 +120,9 @@ const getSubscribedTeachers = async (req, res) => {
     // ✅ تحويل ghostTeacherId إلى ObjectId
     const ghostTeacherObjectId = getGhostTeacherObjectId();
     if (!ghostTeacherObjectId) {
-      console.warn("⚠️ Invalid ghostTeacherId, continuing without Ghost Teacher");
+      console.warn(
+        "⚠️ Invalid ghostTeacherId, continuing without Ghost Teacher",
+      );
     }
 
     // ✅ تحويل studentId إلى ObjectId للتأكد من صحة الاستعلام
@@ -124,11 +131,13 @@ const getSubscribedTeachers = async (req, res) => {
     // ✅ جلب جميع الاشتراكات مع معالجة الأخطاء
     let subscriptions = [];
     try {
-      subscriptions = await TeacherStudentSubscription.find({ studentId: studentObjectId })
+      subscriptions = await TeacherStudentSubscription.find({
+        studentId: studentObjectId,
+      })
         .populate({
           path: "teacherId",
           select: "name subjects profileImage",
-          strictPopulate: false // ✅ السماح بجلب المعلمين حتى لو كان هناك مشاكل
+          strictPopulate: false, // ✅ السماح بجلب المعلمين حتى لو كان هناك مشاكل
         })
         .lean();
       console.log("✅ Found subscriptions:", subscriptions.length);
@@ -149,7 +158,10 @@ const getSubscribedTeachers = async (req, res) => {
         if (ghostTeacher) {
           console.log("✅ Found Ghost Teacher:", ghostTeacher.name);
         } else {
-          console.warn("⚠️ Ghost Teacher not found with ID:", ghostTeacherObjectId);
+          console.warn(
+            "⚠️ Ghost Teacher not found with ID:",
+            ghostTeacherObjectId,
+          );
         }
       } else {
         console.warn("⚠️ ghostTeacherId is not valid");
@@ -161,26 +173,26 @@ const getSubscribedTeachers = async (req, res) => {
     }
 
     // ✅ التأكد من وجود اشتراك للطالب مع Ghost Teacher
-    const hasGhostSubscription = ghostTeacherObjectId && subscriptions.some(
-      sub => {
+    const hasGhostSubscription =
+      ghostTeacherObjectId &&
+      subscriptions.some((sub) => {
         try {
           const subTeacherId = sub.teacherId?._id || sub.teacherId;
           if (!subTeacherId) return false;
-          
+
           // ✅ مقارنة كـ string للتأكد من المطابقة
           return subTeacherId.toString() === ghostTeacherObjectId.toString();
         } catch (e) {
           console.error("❌ Error checking ghost subscription:", e);
           return false;
         }
-      }
-    );
+      });
 
     console.log("🔍 Ghost subscription check:", {
       hasGhostSubscription,
       ghostTeacherExists: !!ghostTeacher,
       ghostTeacherObjectId: ghostTeacherObjectId?.toString(),
-      subscriptionsCount: subscriptions.length
+      subscriptionsCount: subscriptions.length,
     });
 
     // ✅ إذا لم يكن هناك اشتراك وكان Ghost Teacher موجوداً، إنشاء واحد تلقائياً
@@ -195,14 +207,19 @@ const getSubscribedTeachers = async (req, res) => {
         console.log("✅ تم إنشاء اشتراك تلقائي للطالب مع Ghost Teacher:", {
           subscriptionId: newSubscription._id.toString(),
           studentId: studentObjectId.toString(),
-          teacherId: ghostTeacherObjectId.toString()
+          teacherId: ghostTeacherObjectId.toString(),
         });
       } catch (subError) {
         // ✅ تجاهل الخطأ إذا كان الاشتراك موجوداً بالفعل
         if (subError.code === 11000) {
-          console.log("ℹ️ Ghost Teacher subscription already exists (duplicate key)");
+          console.log(
+            "ℹ️ Ghost Teacher subscription already exists (duplicate key)",
+          );
         } else {
-          console.warn("⚠️ فشل في إنشاء اشتراك Ghost Teacher:", subError.message);
+          console.warn(
+            "⚠️ فشل في إنشاء اشتراك Ghost Teacher:",
+            subError.message,
+          );
           console.error("❌ Subscription error details:", subError);
         }
       }
@@ -211,14 +228,19 @@ const getSubscribedTeachers = async (req, res) => {
     // ✅ إعادة جلب الاشتراكات بعد التأكد من وجود Ghost Teacher
     let allSubscriptions = [];
     try {
-      allSubscriptions = await TeacherStudentSubscription.find({ studentId: studentObjectId })
+      allSubscriptions = await TeacherStudentSubscription.find({
+        studentId: studentObjectId,
+      })
         .populate({
           path: "teacherId",
           select: "name subjects profileImage",
-          strictPopulate: false
+          strictPopulate: false,
         })
         .lean();
-      console.log("✅ Total subscriptions after refresh:", allSubscriptions.length);
+      console.log(
+        "✅ Total subscriptions after refresh:",
+        allSubscriptions.length,
+      );
     } catch (refreshError) {
       console.error("❌ Error refreshing subscriptions:", refreshError.message);
       console.error("❌ Refresh error stack:", refreshError.stack);
@@ -228,7 +250,7 @@ const getSubscribedTeachers = async (req, res) => {
 
     // ✅ تنسيق البيانات مع إعطاء أولوية لـ Ghost Teacher
     const formatted = allSubscriptions
-      .filter(sub => {
+      .filter((sub) => {
         // ✅ تصفية الاشتراكات التي لا تحتوي على معلم صالح
         try {
           return sub.teacherId && sub.teacherId._id;
@@ -239,14 +261,17 @@ const getSubscribedTeachers = async (req, res) => {
       .map((sub) => {
         try {
           const teacherId = sub.teacherId?._id || sub.teacherId;
-          const isGhost = ghostTeacherObjectId && 
-                         teacherId && 
-                         teacherId.toString() === ghostTeacherObjectId.toString();
-          
+          const isGhost =
+            ghostTeacherObjectId &&
+            teacherId &&
+            teacherId.toString() === ghostTeacherObjectId.toString();
+
           return {
             _id: teacherId,
             name: sub.teacherId?.name || "معلم غير معروف",
-            subjects: Array.isArray(sub.teacherId?.subjects) ? sub.teacherId.subjects : [],
+            subjects: Array.isArray(sub.teacherId?.subjects)
+              ? sub.teacherId.subjects
+              : [],
             profileImage: sub.teacherId?.profileImage || null,
             subscriptionType: sub.type || "free",
             startDate: sub.startDate || null,
@@ -258,28 +283,32 @@ const getSubscribedTeachers = async (req, res) => {
           return null;
         }
       })
-      .filter(item => item !== null); // ✅ إزالة العناصر الفارغة
+      .filter((item) => item !== null); // ✅ إزالة العناصر الفارغة
 
     // ✅ التأكد من وجود Ghost Teacher في القائمة (إذا كان موجوداً)
     if (ghostTeacher && ghostTeacherObjectId) {
-      const ghostTeacherInList = formatted.some(t => 
-        t._id && t._id.toString() === ghostTeacherObjectId.toString()
+      const ghostTeacherInList = formatted.some(
+        (t) => t._id && t._id.toString() === ghostTeacherObjectId.toString(),
       );
-      
+
       if (!ghostTeacherInList) {
-        console.log("⚠️ Ghost Teacher not in subscriptions list, adding it manually");
+        console.log(
+          "⚠️ Ghost Teacher not in subscriptions list, adding it manually",
+        );
         // ✅ إضافة Ghost Teacher يدوياً إذا لم يكن موجوداً
         formatted.unshift({
           _id: ghostTeacher._id || ghostTeacherObjectId,
           name: ghostTeacher.name || "Ghost Examinations",
-          subjects: Array.isArray(ghostTeacher.subjects) ? ghostTeacher.subjects : ["جميع المواد"],
+          subjects: Array.isArray(ghostTeacher.subjects)
+            ? ghostTeacher.subjects
+            : ["جميع المواد"],
           profileImage: ghostTeacher.profileImage || null,
           subscriptionType: "free",
           startDate: null,
           endDate: null,
           isGhostTeacher: true,
         });
-        
+
         // ✅ محاولة إنشاء الاشتراك إذا لم يكن موجوداً
         try {
           await TeacherStudentSubscription.create({
@@ -291,7 +320,10 @@ const getSubscribedTeachers = async (req, res) => {
           console.log("✅ Created missing Ghost Teacher subscription");
         } catch (createError) {
           if (createError.code !== 11000) {
-            console.warn("⚠️ Could not create Ghost Teacher subscription:", createError.message);
+            console.warn(
+              "⚠️ Could not create Ghost Teacher subscription:",
+              createError.message,
+            );
           }
         }
       }
@@ -305,15 +337,19 @@ const getSubscribedTeachers = async (req, res) => {
     });
 
     console.log("✅ Returning", formatted.length, "teachers");
-    console.log("👻 Ghost Teacher in list:", formatted.some(t => t.isGhostTeacher));
+    console.log(
+      "👻 Ghost Teacher in list:",
+      formatted.some((t) => t.isGhostTeacher),
+    );
     res.json(formatted);
   } catch (error) {
     console.error("❌ خطأ أثناء جلب المعلمين:", error);
     console.error("❌ Error message:", error.message);
     console.error("❌ Error stack:", error.stack);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "حدث خطأ أثناء جلب المعلمين المشترك معهم",
-      details: process.env.NODE_ENV === "development" ? error.message : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -321,88 +357,76 @@ const getSubscribedTeachers = async (req, res) => {
 // ✅ الدالة 2: جلب امتحانات المعلم حسب نوع الاشتراك
 const getTeacherExamsByStudent = async (req, res) => {
   try {
-    const studentId = req.user.id;
+    const studentId = req.user?.id || req.user?.userId || req.user?._id;
     const { teacherId } = req.params;
 
+    if (!studentId) {
+      return res.status(401).json({ error: "❌ يجب تسجيل الدخول أولاً" });
+    }
+
+    if (!teacherId || !mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({ error: "❌ معرف المعلم غير صحيح" });
+    }
+
+    const studentObjectId = new mongoose.Types.ObjectId(studentId);
+    const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
+
+    // ✅ ابحث عن اشتراك حقيقي بين الطالب وهذا المعلم
     const subscription = await TeacherStudentSubscription.findOne({
-      studentId,
-      teacherId,
+      studentId: studentObjectId,
+      teacherId: teacherObjectId,
+    }).lean();
+
+    // ✅ التحقق هل هذا هو Ghost Teacher
+    const ghostTeacherObjectId = getGhostTeacherObjectId();
+    const isGhostTeacher =
+      ghostTeacherObjectId &&
+      ghostTeacherObjectId.toString() === teacherObjectId.toString();
+
+    console.log("🔐 Access check:", {
+      studentId: studentObjectId.toString(),
+      teacherId: teacherObjectId.toString(),
+      hasSubscription: !!subscription,
+      subscriptionType: subscription?.type || null,
+      isGhostTeacher,
     });
 
-    const type = subscription ? subscription.type : "free";
-    
-    // ✅ التحقق إذا كان هذا المعلم هو Ghost Teacher
-    const ghostTeacherObjectId = getGhostTeacherObjectId();
-    
-    // ✅ تحويل teacherId إلى ObjectId للتأكد من المقارنة الصحيحة
-    let teacherObjectId = null;
-    if (teacherId) {
-      if (mongoose.Types.ObjectId.isValid(teacherId)) {
-        teacherObjectId = new mongoose.Types.ObjectId(teacherId);
-      } else {
-        console.error("❌ Invalid teacherId format:", teacherId);
-      }
+    // ✅ الحماية الأساسية:
+    // إذا لا يوجد اشتراك مع هذا المعلم -> امنع الوصول
+    if (!subscription) {
+      return res.status(403).json({
+        error: "❌ غير مصرح لك بالوصول إلى هذا البنك",
+        message: "يجب أن يكون لديك اشتراك فعّال مع هذا المعلم أولاً",
+      });
     }
-    
-    // ✅ مقارنة ObjectIds بشكل صحيح (مقارنة كسلسلة نصية)
-    const isGhostTeacher = ghostTeacherObjectId && 
-                          teacherObjectId && 
-                          ghostTeacherObjectId.toString() === teacherObjectId.toString();
-    
-    // ✅ أيضاً التحقق من المقارنة المباشرة للـ string
-    const isGhostTeacherByString = ghostTeacherId && 
-                                  teacherId && 
-                                  ghostTeacherId.toString() === teacherId.toString();
-    
-    const finalIsGhostTeacher = isGhostTeacher || isGhostTeacherByString;
-    
-    console.log("🔍 Teacher ID check:", {
-      teacherId: teacherId,
-      teacherIdType: typeof teacherId,
-      teacherObjectId: teacherObjectId?.toString(),
-      ghostTeacherId: ghostTeacherId,
-      ghostTeacherObjectId: ghostTeacherObjectId?.toString(),
-      isGhostTeacher: isGhostTeacher,
-      isGhostTeacherByString: isGhostTeacherByString,
-      finalIsGhostTeacher: finalIsGhostTeacher
-    });
-    
+
+    const type = subscription.type || "free";
     let allExams = [];
-    
-    if (finalIsGhostTeacher) {
-      // ✅ إذا كان Ghost Teacher، جلب امتحانات من Exam model مع examType: "ghost"
+
+    if (isGhostTeacher) {
       console.log("👻 Fetching Ghost Examinations from Exam model");
-      
-      // ✅ جلب من Exam model أولاً
+
       const ghostExams = await Exam.find({ examType: "ghost" })
         .populate("questions")
         .sort({ createdAt: -1 })
         .lean();
-      
-      console.log(`📊 Raw ghost exams from Exam model: ${ghostExams.length}`);
-      
-      // ✅ أيضاً جلب من TeacherCustomExam كـ fallback (في حال تم إنشاؤها هناك)
-      const ghostCustomExams = await TeacherCustomExam.find({ 
-        teacherId: ghostTeacherObjectId || teacherObjectId 
+
+      const ghostCustomExams = await TeacherCustomExam.find({
+        teacherId: teacherObjectId,
       })
         .sort({ createdAt: -1 })
         .lean();
-      
-      console.log(`📊 Raw ghost exams from TeacherCustomExam: ${ghostCustomExams.length}`);
-      
-      // ✅ تحويل تنسيق Exam إلى تنسيق متوافق مع TeacherCustomExam للعرض
-      const examModelExams = ghostExams.map(exam => {
-        // ✅ معالجة الأسئلة - قد تكون ObjectId أو كائنات
-        const questionsArray = Array.isArray(exam.questions) 
-          ? exam.questions.map(q => {
-              // إذا كان السؤال ObjectId فقط، نعيده كما هو
-              if (typeof q === 'object' && q !== null && q.questionText) {
-                return q; // السؤال محمل بالفعل
+
+      const examModelExams = ghostExams.map((exam) => {
+        const questionsArray = Array.isArray(exam.questions)
+          ? exam.questions.map((q) => {
+              if (typeof q === "object" && q !== null && q.questionText) {
+                return q;
               }
-              return q; // ObjectId
+              return q;
             })
           : [];
-        
+
         return {
           _id: exam._id,
           examName: exam.title || exam.examName || "امتحان بدون عنوان",
@@ -412,16 +436,15 @@ const getTeacherExamsByStudent = async (req, res) => {
           duration: exam.duration || 0,
           questions: questionsArray,
           createdAt: exam.createdAt || new Date(),
-          isGhostExam: true, // ✅ علامة للتمييز
+          isGhostExam: true,
         };
       });
-      
-      // ✅ دمج الامتحانات من كلا المصدرين
+
       allExams = [...examModelExams, ...ghostCustomExams];
-      
-      // ✅ إزالة التكرارات بناءً على _id
+
       const uniqueExams = [];
       const seenIds = new Set();
+
       for (const exam of allExams) {
         const examId = exam._id?.toString();
         if (examId && !seenIds.has(examId)) {
@@ -429,35 +452,30 @@ const getTeacherExamsByStudent = async (req, res) => {
           uniqueExams.push(exam);
         }
       }
+
       allExams = uniqueExams;
-      
-      console.log(`✅ Found ${allExams.length} Ghost Examinations (${examModelExams.length} from Exam, ${ghostCustomExams.length} from TeacherCustomExam)`);
-      if (allExams.length > 0) {
-        console.log("📋 Sample exam data:", JSON.stringify({
-          _id: allExams[0]._id,
-          examName: allExams[0].examName,
-          subject: allExams[0].subject,
-          questionsCount: allExams[0].questions?.length || 0
-        }, null, 2));
-      }
+
+      console.log(
+        `✅ Found ${allExams.length} Ghost Examinations (${examModelExams.length} from Exam, ${ghostCustomExams.length} from TeacherCustomExam)`,
+      );
     } else {
-      // ✅ جلب جميع امتحانات المعلم العادي من TeacherCustomExam
       console.log("📚 Fetching regular teacher exams from TeacherCustomExam");
-      allExams = await TeacherCustomExam.find({ teacherId: teacherObjectId || teacherId })
+
+      allExams = await TeacherCustomExam.find({ teacherId: teacherObjectId })
         .sort({ createdAt: -1 })
         .lean();
+
       console.log(`✅ Found ${allExams.length} regular teacher exams`);
     }
 
-    // ✅ إرجاع جميع الامتحانات مع معلومات الاشتراك
-    res.json({
+    return res.json({
       subscriptionType: type,
       exams: allExams,
       totalExams: allExams.length,
     });
   } catch (error) {
     console.error("❌ خطأ في getTeacherExamsByStudent:", error);
-    res.status(500).json({ error: "فشل في جلب امتحانات المعلم" });
+    return res.status(500).json({ error: "فشل في جلب امتحانات المعلم" });
   }
 };
 
@@ -470,8 +488,9 @@ const getGhostTeacherExams = async (req, res) => {
       return res.json([]);
     }
 
-    const exams = await TeacherCustomExam.find({ teacherId: ghostTeacherObjectId })
-      .sort({ createdAt: -1 });
+    const exams = await TeacherCustomExam.find({
+      teacherId: ghostTeacherObjectId,
+    }).sort({ createdAt: -1 });
 
     res.json(exams);
   } catch (error) {
@@ -485,19 +504,24 @@ const getStudentSubscribedTeachersExams = async (req, res) => {
   try {
     // ✅ التحقق من أن المستخدم طالب وليس معلم
     if (req.user?.role !== "student") {
-      console.error("❌ Unauthorized: User is not a student. Role:", req.user?.role);
-      return res.status(403).json({ 
+      console.error(
+        "❌ Unauthorized: User is not a student. Role:",
+        req.user?.role,
+      );
+      return res.status(403).json({
         error: "❌ هذا الـ endpoint مخصص للطلاب فقط",
-        userRole: req.user?.role 
+        userRole: req.user?.role,
       });
     }
 
     // ✅ الحصول على studentId من req.user
     const studentId = req.user?.id || req.user?.userId || req.user?._id;
-    
+
     if (!studentId) {
       console.error("❌ studentId not found in req.user:", req.user);
-      return res.status(400).json({ error: "❌ لم يتم العثور على معرف الطالب" });
+      return res
+        .status(400)
+        .json({ error: "❌ لم يتم العثور على معرف الطالب" });
     }
 
     // ✅ التحقق من صحة studentId
@@ -512,17 +536,26 @@ const getStudentSubscribedTeachersExams = async (req, res) => {
     console.log("✅ Fetching exams for studentId:", studentId);
 
     // ✅ جلب جميع المعلمين المشترك معهم الطالب
-    const subscriptions = await TeacherStudentSubscription.find({ studentId: studentObjectId })
+    const subscriptions = await TeacherStudentSubscription.find({
+      studentId: studentObjectId,
+    })
       .select("teacherId")
       .lean();
 
     console.log("✅ Found subscriptions:", subscriptions.length);
 
-    const teacherIds = subscriptions.map(sub => sub.teacherId).filter(id => id);
-    
+    const teacherIds = subscriptions
+      .map((sub) => sub.teacherId)
+      .filter((id) => id);
+
     // ✅ Ensure Ghost Teacher is always included
     const ghostTeacherObjectId = getGhostTeacherObjectId();
-    if (ghostTeacherObjectId && !teacherIds.some(id => id.toString() === ghostTeacherObjectId.toString())) {
+    if (
+      ghostTeacherObjectId &&
+      !teacherIds.some(
+        (id) => id.toString() === ghostTeacherObjectId.toString(),
+      )
+    ) {
       teacherIds.push(ghostTeacherObjectId);
       console.log("✅ Added Ghost Teacher to teacherIds list");
     }
@@ -534,7 +567,7 @@ const getStudentSubscribedTeachersExams = async (req, res) => {
 
     // ✅ جلب جميع امتحانات هؤلاء المعلمين
     const exams = await TeacherCustomExam.find({
-      teacherId: { $in: teacherIds }
+      teacherId: { $in: teacherIds },
     })
       .sort({ createdAt: -1 })
       .lean();
@@ -543,7 +576,9 @@ const getStudentSubscribedTeachersExams = async (req, res) => {
     res.json(exams);
   } catch (error) {
     console.error("❌ خطأ في getStudentSubscribedTeachersExams:", error);
-    res.status(500).json({ error: "فشل في جلب امتحانات المعلمين", details: error.message });
+    res
+      .status(500)
+      .json({ error: "فشل في جلب امتحانات المعلمين", details: error.message });
   }
 };
 
