@@ -371,17 +371,56 @@ const getTeacherExamsByStudent = async (req, res) => {
     const studentObjectId = new mongoose.Types.ObjectId(studentId);
     const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
 
-    // ✅ ابحث عن اشتراك حقيقي بين الطالب وهذا المعلم
-    const subscription = await TeacherStudentSubscription.findOne({
-      studentId: studentObjectId,
-      teacherId: teacherObjectId,
-    }).lean();
-
-    // ✅ التحقق هل هذا هو Ghost Teacher
+    // ✅ التحقق هل هذا هو المعلم الافتراضي
     const ghostTeacherObjectId = getGhostTeacherObjectId();
     const isGhostTeacher =
       ghostTeacherObjectId &&
       ghostTeacherObjectId.toString() === teacherObjectId.toString();
+
+    // ✅ ابحث عن الاشتراك الحالي بين الطالب وهذا المعلم
+    let subscription = await TeacherStudentSubscription.findOne({
+      studentId: studentObjectId,
+      teacherId: teacherObjectId,
+    }).lean();
+
+    // ✅ إذا كان هذا هو المعلم الافتراضي، اسمح دائمًا للطالب المسجل دخول
+    // وإذا لم يوجد اشتراك، أنشئ اشتراك free تلقائيًا
+    if (isGhostTeacher && !subscription) {
+      try {
+        const createdSubscription = await TeacherStudentSubscription.create({
+          studentId: studentObjectId,
+          teacherId: teacherObjectId,
+          type: "free",
+          startDate: new Date(),
+        });
+
+        subscription = {
+          _id: createdSubscription._id,
+          studentId: createdSubscription.studentId,
+          teacherId: createdSubscription.teacherId,
+          type: createdSubscription.type,
+          startDate: createdSubscription.startDate,
+        };
+
+        console.log("✅ تم إنشاء اشتراك مجاني تلقائي مع المعلم الافتراضي");
+      } catch (createError) {
+        // ✅ لو كان موجود بالفعل وصار race condition
+        if (createError.code === 11000) {
+          subscription = await TeacherStudentSubscription.findOne({
+            studentId: studentObjectId,
+            teacherId: teacherObjectId,
+          }).lean();
+        } else {
+          console.error(
+            "❌ فشل في إنشاء اشتراك المعلم الافتراضي:",
+            createError
+          );
+          return res
+            .status(500)
+            .json({ error: "❌ فشل في تجهيز المعلم الافتراضي" });
+        }
+      }
+    }
 
     console.log("🔐 Access check:", {
       studentId: studentObjectId.toString(),
@@ -391,8 +430,7 @@ const getTeacherExamsByStudent = async (req, res) => {
       isGhostTeacher,
     });
 
-    // ✅ الحماية الأساسية:
-    // إذا لا يوجد اشتراك مع هذا المعلم -> امنع الوصول
+    // ✅ باقي المعلمين: لازم يكون عنده اشتراك فعلي
     if (!subscription) {
       return res.status(403).json({
         error: "❌ غير مصرح لك بالوصول إلى هذا البنك",
@@ -456,7 +494,7 @@ const getTeacherExamsByStudent = async (req, res) => {
       allExams = uniqueExams;
 
       console.log(
-        `✅ Found ${allExams.length} Ghost Examinations (${examModelExams.length} from Exam, ${ghostCustomExams.length} from TeacherCustomExam)`,
+        `✅ Found ${allExams.length} Ghost Examinations (${examModelExams.length} from Exam, ${ghostCustomExams.length} from TeacherCustomExam)`
       );
     } else {
       console.log("📚 Fetching regular teacher exams from TeacherCustomExam");
