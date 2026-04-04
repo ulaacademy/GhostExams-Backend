@@ -1,13 +1,13 @@
 // backend/config/ghostTeacher.js
 module.exports = {
   // ✅ المعلم الافتراضي اللي بينضاف تلقائيًا للطالب (فقط للاستثناء من العداد)
-  ghostTeacherId: "6925950db9f708163dd423a7",
+  ghostTeacherId: "69d10a027f5781b88148972b",
 
   // ✅ الأربع معلمين اللي بدنا نعتبرهم Ghost Teachers (للخطط teacherType = "ghost")
   ghostTeachersIds: [
-    "695c379a76bfebc62783b4a5", // Ghost History 2009
-    "6945cbc643cff502c6460873", // GHOST ISLAMIC 2009
-    "6945bfcd43cff502c645f5ee", // GHOST ARABIC 2009
-    "6945bd19f63cff3e4bd2d854", // GHOST ENGLISH 2009
+    "69d108397f5781b881489620", // Ghost History 2009
+    "69d107ee7f5781b8814895e4", // GHOST ISLAMIC 2009
+    "69d106137f5781b881489450", // GHOST ARABIC 2009
+    "69d1072e7f5781b88148954a", // GHOST ENGLISH 2009
   ],
 };
